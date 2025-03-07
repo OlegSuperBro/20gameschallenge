@@ -1,0 +1,120 @@
+[gd_scene load_steps=13 format=3 uid="uid://b3f7xk4mr6g2v"]
+
+[ext_resource type="PackedScene" uid="uid://bmpqunlkfeibo" path="res://Prefabs/Ball.tscn" id="1_80nbo"]
+[ext_resource type="Script" uid="uid://bw3lpigsrcyb8" path="res://Scripts/game_controller.gd" id="1_feb5d"]
+[ext_resource type="PackedScene" uid="uid://c832ld6ibpe0i" path="res://Prefabs/Wall.tscn" id="2_e2o6t"]
+[ext_resource type="AudioStream" uid="uid://dliqw3bd8jirh" path="res://Assets/Goal.wav" id="3_vef74"]
+[ext_resource type="FontFile" uid="uid://c1rn8e538p2yp" path="res://Fonts/Micro5-Regular.ttf" id="4_eow3j"]
+[ext_resource type="PackedScene" uid="uid://yswve1lim8re" path="res://Prefabs/Paddle.tscn" id="4_fc0e3"]
+[ext_resource type="Script" uid="uid://c100smuusvvhm" path="res://Scripts/PaddlePlayer.gd" id="5_ryrav"]
+[ext_resource type="Script" uid="uid://qy6oaw1cphrc" path="res://Scripts/PaddleAI.gd" id="6_eow3j"]
+[ext_resource type="Texture2D" uid="uid://eixebjlxxcfj" path="res://Assets/Separator.png" id="8_j5wjh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_feb5d"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_j5wjh"]
+font = ExtResource("4_eow3j")
+font_size = 46
+
+[sub_resource type="LabelSettings" id="LabelSettings_eow3j"]
+font = ExtResource("4_eow3j")
+font_size = 46
+
+[node name="Node2D" type="Node2D"]
+
+[node name="BG" type="ColorRect" parent="."]
+offset_left = -773.0
+offset_top = -399.0
+offset_right = 817.0
+offset_bottom = 400.0
+color = Color(0, 0, 0, 1)
+
+[node name="GameController" type="Node" parent="." node_paths=PackedStringArray("scored_audio_player", "left_score_label", "right_score_label")]
+script = ExtResource("1_feb5d")
+scored_audio_player = NodePath("../ScoredAudioPlayer")
+ball_scene = ExtResource("1_80nbo")
+left_score_label = NodePath("../Control/LeftScore")
+right_score_label = NodePath("../Control/RightScore")
+
+[node name="ScoredAudioPlayer" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_vef74")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="Wall" parent="." instance=ExtResource("2_e2o6t")]
+position = Vector2(0, 320)
+scale = Vector2(60, 1)
+
+[node name="Wall3" parent="." instance=ExtResource("2_e2o6t")]
+position = Vector2(0, -320)
+scale = Vector2(60, 1)
+
+[node name="LeftArea" type="Area2D" parent="."]
+position = Vector2(-600, 0)
+scale = Vector2(1, 30)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftArea"]
+shape = SubResource("RectangleShape2D_feb5d")
+
+[node name="RightArea" type="Area2D" parent="."]
+position = Vector2(600, 0)
+scale = Vector2(1, 30)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightArea"]
+shape = SubResource("RectangleShape2D_feb5d")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -576.0
+offset_top = -324.0
+offset_right = 576.0
+offset_bottom = 324.0
+
+[node name="LeftScore" type="Label" parent="Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -256.0
+offset_top = 20.0
+offset_right = -13.0
+offset_bottom = 67.0
+grow_horizontal = 2
+text = "LEFT SCORE LABEL"
+label_settings = SubResource("LabelSettings_j5wjh")
+horizontal_alignment = 2
+
+[node name="RightScore" type="Label" parent="Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 16.0
+offset_top = 20.0
+offset_right = 271.0
+offset_bottom = 67.0
+grow_horizontal = 2
+text = "RIGHT SCORE LABEL"
+label_settings = SubResource("LabelSettings_eow3j")
+
+[node name="PaddlePlayer" parent="." instance=ExtResource("4_fc0e3")]
+position = Vector2(-555, 0)
+script = ExtResource("5_ryrav")
+
+[node name="PaddleAI" parent="." instance=ExtResource("4_fc0e3")]
+position = Vector2(555, 0)
+script = ExtResource("6_eow3j")
+
+[node name="Separator" type="Polygon2D" parent="."]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-4, -320)
+scale = Vector2(8, 20)
+texture = ExtResource("8_j5wjh")
+texture_scale = Vector2(1, 3.9)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 32, 0, 32)
+
+[connection signal="reset" from="GameController" to="PaddleAI" method="_on_game_controller_reset"]
+[connection signal="body_entered" from="LeftArea" to="GameController" method="_on_left_area_body_entered"]
+[connection signal="body_entered" from="RightArea" to="GameController" method="_on_right_area_body_entered"]
