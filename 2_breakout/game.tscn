@@ -1,0 +1,117 @@
+[gd_scene load_steps=10 format=3 uid="uid://cgyc65ewc7eit"]
+
+[ext_resource type="Script" uid="uid://drixbe6beydb8" path="res://Scripts/game_controller.gd" id="1_7jktm"]
+[ext_resource type="PackedScene" uid="uid://wcjapmpd7b1x" path="res://Prefabs/BlockField.tscn" id="1_fc0e3"]
+[ext_resource type="PackedScene" uid="uid://clrn78hcx11xv" path="res://Prefabs/Wall.tscn" id="2_7jktm"]
+[ext_resource type="PackedScene" uid="uid://j7owqrrqkayl" path="res://Prefabs/live_template.tscn" id="3_eow3j"]
+[ext_resource type="PackedScene" uid="uid://bmpqunlkfeibo" path="res://Prefabs/Ball.tscn" id="3_ryrav"]
+[ext_resource type="PackedScene" uid="uid://csnhc0ikd7egp" path="res://Prefabs/Paddle.tscn" id="4_eow3j"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ryrav"]
+font_size = 41
+
+[sub_resource type="LabelSettings" id="LabelSettings_eow3j"]
+font_size = 111
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ryrav"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="GameController" type="Node" parent="." node_paths=PackedStringArray("ui_container")]
+script = ExtResource("1_7jktm")
+ui_container = NodePath("../Control")
+ball_scene = ExtResource("3_ryrav")
+live_scene = ExtResource("3_eow3j")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="BlockField" parent="." instance=ExtResource("1_fc0e3")]
+position = Vector2(-110, -109)
+scale = Vector2(1.65673, 1.65673)
+
+[node name="Wall" parent="." instance=ExtResource("2_7jktm")]
+position = Vector2(-575, 10)
+scale = Vector2(1, 32)
+
+[node name="Wall2" parent="." instance=ExtResource("2_7jktm")]
+position = Vector2(0, -320)
+scale = Vector2(60, 1)
+
+[node name="Wall3" parent="." instance=ExtResource("2_7jktm")]
+position = Vector2(325, 10)
+scale = Vector2(0.46, 32)
+
+[node name="CharacterBody2D" parent="." instance=ExtResource("3_ryrav")]
+default_direction = 5
+
+[node name="Paddle" parent="." instance=ExtResource("4_eow3j")]
+position = Vector2(0, 290)
+scale = Vector2(10.61, 1)
+
+[node name="Wall4" parent="." instance=ExtResource("2_7jktm")]
+position = Vector2(575, 10)
+scale = Vector2(1, 32)
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 329.0
+offset_top = -309.0
+offset_right = 565.0
+offset_bottom = 324.0
+
+[node name="Score" type="Label" parent="Control"]
+layout_mode = 0
+offset_right = 234.0
+offset_bottom = 47.0
+text = "SCORE TEXT"
+label_settings = SubResource("LabelSettings_ryrav")
+
+[node name="Lives" type="HFlowContainer" parent="Control"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 52.0
+offset_right = 229.0
+offset_bottom = 232.0
+pivot_offset = Vector2(2.74, 0)
+last_wrap_alignment = 1
+
+[node name="GameOver" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = -435.0
+offset_top = -75.0
+offset_right = 266.0
+offset_bottom = 200.0
+
+[node name="Label" type="Label" parent="GameOver"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -46.0
+offset_right = 46.0
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "GAME OVER"
+label_settings = SubResource("LabelSettings_eow3j")
+
+[node name="Button" type="Button" parent="GameOver"]
+layout_mode = 0
+offset_left = 306.0
+offset_top = 186.0
+offset_right = 371.0
+offset_bottom = 217.0
+text = "Restart"
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(-134, 344)
+scale = Vector2(56.08, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_ryrav")
+
+[connection signal="block_destroyed" from="BlockField" to="GameController" method="_on_block_field_block_destroyed"]
+[connection signal="pressed" from="GameOver/Button" to="GameController" method="_on_button_pressed"]
+[connection signal="body_entered" from="Area2D" to="GameController" method="_on_area_2d_body_entered"]
